@@ -99,6 +99,61 @@ class TestSpineAnimationEditor:
             == {}
         )
 
+    def test_add_bone(self):
+        animator_editor = SpineAnimationEditor.from_json_file(
+            json_path=SPINE_JSON_PATH
+        )
+
+        current_json = animator_editor.to_json_data()
+
+        animator_editor.add_bone("vortex", "root")
+
+        final_json = animator_editor.to_json_data()
+
+        assert (
+            DeepDiff(
+                current_json, final_json, ignore_order=False
+            )
+            != {}
+        )
+
+    def test_add_slot(self):
+        animator_editor = SpineAnimationEditor.from_json_file(
+            json_path=SPINE_JSON_PATH
+        )
+
+        current_json = animator_editor.to_json_data()
+
+        animator_editor.add_slot("new_slot", "root")
+
+        final_json = animator_editor.to_json_data()
+
+        assert (
+            DeepDiff(
+                current_json, final_json, ignore_order=False
+            )
+            != {}
+        )
+
+    def test_add_bone_and_slot(self):
+        animator_editor = SpineAnimationEditor.from_json_file(
+            json_path=SPINE_JSON_PATH
+        )
+
+        current_json = animator_editor.to_json_data()
+
+        animator_editor.add_bone("vortex", "root")
+        animator_editor.add_slot("vortex", "vortex")
+
+        final_json = animator_editor.to_json_data()
+
+        assert (
+            DeepDiff(
+                current_json, final_json, ignore_order=False
+            )
+            != {}
+        )
+
     def test_images_refs(self):
         animation_editor = SpineAnimationEditor.from_json_file(
             json_path=SPINE_JSON_PATH

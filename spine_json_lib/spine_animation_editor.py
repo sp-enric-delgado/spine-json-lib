@@ -260,6 +260,50 @@ class SpineAnimationEditor(object):
         with open(images_json, "w") as outfile:
             json.dump(self.images_references, outfile)
 
+    def add_slot(self, slot_name, slot_bone):
+        anim_data = self.spine_anim_data.data
+
+        self._check_json_element_exists_with_key(anim_data.to_json(SPINE_3_8_VERSION)["bones"], "name", slot_bone)
+
+        self._add_unique_json_object(
+            anim_data.slots,
+            {
+                "name": slot_name,
+                "bone": slot_bone
+            },
+            "name"
+        )
+
+    def add_bone(self, bone_name, parent_name):
+        anim_data = self.spine_anim_data.data
+
+        self._check_json_element_exists_with_key(anim_data.to_json(SPINE_3_8_VERSION)["bones"], "name", parent_name)
+
+        self._add_unique_json_object(
+            anim_data.bones,
+            {
+                "name": bone_name,
+                "parent": parent_name
+            },
+            "name"
+       )
+
+    def _add_unique_json_object(self, original_data, new_data, comparison_key: str) -> None:
+
+        self._check_unique_json_element(original_data, new_data, comparison_key)
+        self._add_json_object(original_data, new_data)
+
+    def _add_json_object(self, object, new_data) -> None:
+        object.append(new_data)
+
+    def _check_unique_json_element(self, original_data, new_data, comparison_key: str) -> None:
+        if any(getattr(element, comparison_key) == new_data[comparison_key] for element in original_data):
+            raise ValueError(f"There is already an existing element: {new_data[f'{comparison_key}']}. Please select a unique element")
+
+    def _check_json_element_exists_with_key(self, original_data, search_key: str, comparison_key: str) -> None:
+        if not any(element[search_key] == comparison_key for element in original_data):
+            raise ValueError(f"There isn't any element named: {comparison_key}. Please input an existing element")
+
     def _erase_raw_animations_data(
         self, animations_to_erase: List[str], strict_mode: bool
     ) -> None:
